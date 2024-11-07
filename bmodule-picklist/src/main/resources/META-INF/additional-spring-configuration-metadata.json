@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "bde-trackpod.client.api.url",
+    "type": "java.lang.String",
+    "description": "Base api url for trackpod api."
+  },
+  {
+    "name": "bde-trackpod.client.api.key",
+    "type": "java.lang.String",
+    "description": "Api key for trackpod aip authentication."
+  },
+  {
+    "name": "bde-trackpod.tasks.scheduled.previousdays",
+    "type": "java.lang.String",
+    "description": "How many days in past the task extraction gets orders and routes from trackpod each execution."
+  },
+  {
+    "name": "bde-trackpod.tasks.scheduled.strategy",
+    "type": "java.lang.String",
+    "description": "The strategy that will be used for schedule the extraction' [fixedRate, fixedDelay, cron]."
+  },
+  {
+    "name": "bde-trackpod.tasks.scheduled.strategy.value",
+    "type": "java.lang.String",
+    "description": "The value off strategy that determines the task execution periodicity."
+  }
+]}

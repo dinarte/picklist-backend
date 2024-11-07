@@ -1,0 +1,70 @@
+plugins {
+	id 'java'
+	id 'idea'
+	id 'org.springframework.boot' version '3.1.4'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'war'
+}
+
+group = 'com.quebecteh.data.integrations'
+version = '0.0.5-SNAPSHOT'
+
+java {
+	toolchain {
+		// languageVersion = JavaLanguageVersion.of(17)
+		sourceCompatibility = JavaVersion.VERSION_17
+    	targetCompatibility = JavaVersion.VERSION_17
+	}
+}
+
+/*
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}*/
+
+tasks.withType(JavaCompile).configureEach {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	//implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+	implementation 'org.springdoc:springdoc-openapi-data-rest:1.7.0'
+	
+	implementation 'com.auth0:java-jwt:4.0.0'
+	
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' 
+	
+	implementation "org.postgresql:postgresql:42.6.0"
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	runtimeOnly 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    /* *** COMUMONS *** */
+    implementation 'org.reflections:reflections:0.10.2'
+	implementation 'org.aspectj:aspectjrt:1.9.19'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.shell:spring-shell-dependencies:3.3.2"
+    }
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

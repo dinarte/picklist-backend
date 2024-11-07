@@ -1,0 +1,114 @@
+
+GET https://api.track-pod.com/Test
+X-API-KEY : 4495065e-d8cb-47eb-aa91-31c5d146cc7c
+accept : text/plain
+
+###
+
+POST https://api.track-pod.com/Order
+X-API-KEY : 4495065e-d8cb-47eb-aa91-31c5d146cc7c
+accept : text/plain
+
+{
+  "Code": "R0001234",
+  "Id": "1234",
+  "Date": "2019-02-01",
+  "StartTimePlan": "13:00",
+  "DepotId": "1",
+  "Depot": "9 Riverside, Salford M7 1PA",
+  "StartFromDepot": true,
+  "ReturnToDepot": true,
+  "DriverLogin": "RT567 ",
+  "DriverPassword": "1",
+  "DriverName": "Peter G.",
+  "DriverVehicle": "FCU 819",
+  "Vehicle": {
+    "Number": "XXX777",
+    "CarrierCode": "31",
+    "Carrier": "Big Logistics",
+    "Weight": 10000,
+    "Volume": 14.5,
+    "Pallets": 16
+  },
+  "Orders": [
+    {
+      "Number": "cv30001-2",
+      "Id": "10000345",
+      "Date": "2019-02-01",
+      "Type": 0,
+      "Shipper": "Sanitex",
+      "Depot": "9 Riverside, Salford M7 1PA ",
+      "Client": "Maxima",
+      "Address": "2 St Josephs Crescent, Liverpool L3 3JF",
+      "AddressLat": 25.29048,
+      "AddressLon": 65.29405,
+      "AddressZone": "Zone 1",
+      "TimeSlotFrom": "2019-02-01T09:00:00",
+      "TimeSlotTo": "2019-02-01T18:00:00",
+      "ServiceTime": 10,
+      "Note": "Only to sign Invoice",
+      "ContactName": "John Doe",
+      "Phone": "+37061191244",
+      "Email": "X-604@maxima.com",
+      "Weight": 50.5,
+      "Volume": 8.54,
+      "Pallets": 3.5,
+      "COD": 20.45,
+      "InvoiceId": "inv0002 ",
+      "CustomerReferenceId": "ord123/1",
+      "Barcode": "1234567890123",
+      "ShipperId": "357",
+      "DepotId": "1",
+      "ClientId": "247",
+      "AddressId": "13587",
+      "GoodsList": [
+        {
+          "OrderLineId": "22435324",
+          "GoodsId": "30495",
+          "GoodsName": "Some big mystic box",
+          "GoodsUnit": "pcs.",
+          "Note": "ID3658AAA",
+          "Quantity": 10.5,
+          "Cost": 2.99,
+          "OrderLineBarcode": "1234567890123",
+          "GoodsBarcode": "1234567890123"
+        }
+      ],
+      "CustomFields": [
+        {
+          "Id": "cf_456",
+          "Value": "string"
+        }
+      ],
+      "PickupOrder": {
+        "ClientId": "247",
+        "Client": "Maxima",
+        "AddressId": "13587",
+        "Address": "2 St Josephs Crescent, Liverpool L3 3JF",
+        "AddressLat": 25.29048,
+        "AddressLon": 65.29405,
+        "AddressZone": "Zone 1",
+        "ContactName": "John Doe",
+        "Phone": "+37061191244",
+        "Email": "X-604@maxima.com",
+        "TimeSlotFrom": "2019-02-01T09:00:00",
+        "TimeSlotTo": "2019-02-01T18:00:00",
+        "ServiceTime": 10,
+        "CustomFields": [
+          {
+            "Id": "cf_456",
+            "Value": "string"
+          }
+        ],
+        "COD": 20.45,
+        "Note": "Only to sign Invoice"
+      }
+    }
+  ],
+  "CustomFields": [
+    {
+      "Id": "cf_456",
+      "Value": "string"
+    }
+  ]
+}
