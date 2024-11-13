@@ -2,10 +2,12 @@ package com.quebecteh.modules.inventary.picklist.model.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.quebecteh.modules.inventary.picklist.PickListConstants;
+import com.quebecteh.modules.inventary.picklist.model.dto.PickListItemGrupedDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -71,5 +73,37 @@ public class PickList {
 	@JsonManagedReference
 	@OneToMany(mappedBy = "pickList", cascade = CascadeType.ALL)
 	private List<PickListItem> pickListItems;
+	
+	
+	public List<PickListItemGrupedDTO> getGrupedItens() {
+		
+	    return 	pickListItems.stream()
+						.collect(Collectors.groupingBy(PickListItem::getProductCode))
+						.entrySet().stream()
+						.map( entry -> {					
+								List<PickListItem> items = entry.getValue();
+								items.sort((a, b) -> a.getSalesOrderCode().compareTo(b.getSalesOrderCode()));
+								PickListItem item = items.get(0);
+							
+								return PickListItemGrupedDTO
+										.builder()
+										.itemList(items)
+										.pickListId(item.getPickList().getId())
+										.routeCode(item.getRouteCode())
+										.routeName(item.getRouteName())
+										.productCode(item.getProductCode())
+										.productName(item.getProductName())
+										.productImage(item.getProductImage())
+										.barCode(item.getBarCode())
+										.productUnitType(item.getProductName())
+										.quantityOrdered(items.stream().mapToInt(PickListItem::getQuantityOrdered).sum())
+										.quantityDisponible(item.getQuantityDisponible())
+										.quantityInUnit(item.getQuantityInUnit())
+										.quantityPicked(items.stream().mapToInt(PickListItem::getQuantityPicked).sum())
+										.status(item.getStatus())
+										.build();
+							}).collect(Collectors.toList());
+							
+	}
 
 }

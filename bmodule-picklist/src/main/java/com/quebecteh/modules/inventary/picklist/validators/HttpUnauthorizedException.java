@@ -1,16 +1,16 @@
 package com.quebecteh.modules.inventary.picklist.validators;
 
-public class HttpBadRequestException extends HttpException {
+public class HttpUnauthorizedException extends HttpException {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final String DEFAULT_MESSAGE = "Bed request exception.";
+	private static final String DEFAULT_MESSAGE = "Unauthorized";
 	
-	public HttpBadRequestException() {
+	public HttpUnauthorizedException() {
 		super(DEFAULT_MESSAGE);
 	}
 	
-	public HttpBadRequestException(Object detail, String detailId) {
+	public HttpUnauthorizedException(Object detail, String detailId) {
 		super(DEFAULT_MESSAGE);
 		this.detail = detail; 
 		this.detailId = detailId;
@@ -18,12 +18,12 @@ public class HttpBadRequestException extends HttpException {
 
 	@Override
 	public int getCode() {
-		return 400;
+		return 401;
 	}
 
 	@Override
 	public String getMessageId() {
-		return "bed-request-exception";
+		return "unauthorized-exception";
 	}
 		
 

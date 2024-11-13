@@ -39,16 +39,14 @@ public class ConnectionsController {
 		ApiEndPointDTO[] zohoEndPoins = {
 				new ApiEndPointDTO("Connect to Zoho Inventary", "connect-zoho-inventary", "/zoho/" +tenantId + "/auth", "GET")
 		};
+	
 		
 		var zohoInventaryConnStatus = "Connected";
 		if (auth == null || auth.getId() == null) {
 			zohoInventaryConnStatus = "Not connected";
-		}
-		
-		if (!auth.getTenantId().equals(tenantId)) {
+		} else if (!auth.getTenantId().equals(tenantId)) {
 			zohoInventaryConnStatus = "Not connected";
 		}
-		
 		
 		ConnectionsDTO zohoConn = new ConnectionsDTO("Zoho Inventary", connectoProperties.getScope(), zohoInventaryConnStatus, true, zohoEndPoins);
 		

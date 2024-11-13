@@ -1,5 +1,6 @@
 package com.quebecteh.modules.inventary.picklist.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -25,6 +26,7 @@ import com.quebecteh.modules.inventary.picklist.PickListConstants;
 import com.quebecteh.modules.inventary.picklist.interceptors.RequiredTenatantId;
 import com.quebecteh.modules.inventary.picklist.model.domain.PickList;
 import com.quebecteh.modules.inventary.picklist.model.domain.PickListItem;
+import com.quebecteh.modules.inventary.picklist.model.dto.UpdateItemListDTO;
 import com.quebecteh.modules.inventary.picklist.model.dto.TotalPickListByStatus;
 import com.quebecteh.modules.inventary.picklist.service.PickListItemService;
 import com.quebecteh.modules.inventary.picklist.service.PickListService;
@@ -176,6 +178,34 @@ public class PickListController {
 				"status-updated-"+status,
 				"The Picklist item status has been set to "+status, 
 				picklistItem);
+    	
+    }
+    
+    @PatchMapping("/{tenantId}/pickList/{pickListId}/item/{status}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ApiResponse<List<PickListItem>> setItemStatus(
+    												@PathVariable("tenantId") String tenantId, 
+    												@PathVariable("pickListId") Long pickListId,  
+    												@PathVariable("status") String status,
+    												@RequestBody UpdateItemListDTO updateItemList) throws HttpResouceNotFoundException {
+    	verifyItemStatus(status);
+    	verifyResouce(pickListId, tenantId);
+
+    	var returnList = new ArrayList<PickListItem>();
+    	updateItemList.getUpdateList().forEach( item -> {
+    		pickListItemService.updateField(item.getId(), "status", status);
+    		if (item.getQuantityPicked() != null)
+    			pickListItemService.updateField(item.getId(), "quantityPicked", item.getQuantityPicked());
+        	var picklistItem =  pickListItemService.findById(item.getId()).get();
+        	returnList.add(picklistItem);
+    	});
+    	
+    	
+    	return new ApiResponse<List<PickListItem>>(
+				HttpStatus.OK.value(), 
+				"status-updated-"+status,
+				"The Picklist item status has been set to "+status, 
+				returnList);
     	
     }
 

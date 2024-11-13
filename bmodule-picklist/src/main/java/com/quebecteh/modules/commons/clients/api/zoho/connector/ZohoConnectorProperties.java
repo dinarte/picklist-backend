@@ -1,19 +1,18 @@
 package com.quebecteh.modules.commons.clients.api.zoho.connector;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @Component
+@RequiredArgsConstructor
 public class ZohoConnectorProperties {
 
-	@Autowired
-    private HttpServletRequest request;
-	
+    private final HttpServletRequest request;
 	
 	@Value("${spring.application.name}")
 	private String appName;
@@ -32,10 +31,17 @@ public class ZohoConnectorProperties {
 
     @Value("${bmodule-picklist.zoho.client.api.baseUrl}")
     private String apiBaseUrl;
+    
+    @Value("${bmodule-picklist.https}")
+    private String https;
 
     public String getAuthUrl(String tenantId, String authCallback)  {
         String url = authBaseUrl + "/auth?client_id=" + clientId + "&response_type=code&scope=" + scope + "&redirect_uri=" 
                                     + authCallback + "&state=" + tenantId + "&access_type=offline";
+        
+        System.out.println("AUTH URL:");
+        System.out.println(url);
+        
         return url;
 
     }
@@ -49,6 +55,11 @@ public class ZohoConnectorProperties {
     public String getRefreshTokenURL(String refreshToken, String authCallback) {
     	String url = authBaseUrl + "/token?refresh_token="+refreshToken+"&client_id="+clientId+"&client_secret="+clientSecret
     						+"&redirect_uri="+authCallback+"&grant_type=refresh_token";
+    	return url;
+    }
+    
+    public String getRevokeRefreshTokenURL(String refreshToken) {
+    	String url = authBaseUrl + "/token/revoke?token="+refreshToken;
     	return url;
     }
     
@@ -71,8 +82,9 @@ public class ZohoConnectorProperties {
     }
     
     public String getBaseAppContextUrl() {
+    	String protocol = Boolean.valueOf(https) ? "https" : "http";
     	String port = request.getServerPort() != 80 ? ":" + request.getServerPort() : "";
-    	return request.getScheme() + "://" + request.getServerName() + port + request.getContextPath();
+    	return protocol + "://" + request.getServerName() + port + request.getContextPath();
     }
     
     

@@ -68,3 +68,29 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+/*
+remotes {
+  ContaigeClaud {
+    host = 'ag-br1-17.conteige.cloud' 
+    port = 28626
+    user = 'application'
+    identity = file("${System.properties['user.home']}/.ssh/guimas_rsa_id") 
+  }
+}  
+
+task deploy {
+  doLast {
+    ssh.run {
+      session(remotes.ContaigeClaud) {
+        put from: "$buildDir/${buildBaseName}-${buildVersion}.war", into: 'appserver/webapps/ROOT.war'
+      }
+    }
+  }
+}
+
+task createWarAndDeploy(dependsOn: ['setAppVersion', 'createWar', 'deploy']) {
+    // empty task body, dependsOn already handles the dependencies
+}
+*/

@@ -135,5 +135,21 @@ public class RestExceptionHandler {
 								.build().
 								convertValue(ex,  new TypeReference<ExceptionDetailRecord>(){});
 	}
+    
+    
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<String>> handleUnknownExceptions(Exception ex) {
+        ex.printStackTrace();
+    	ApiResponse<String> response = new ApiErrorResponse<>(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "unknown-server-error",
+            "Unknown Server Error",
+            ex.getLocalizedMessage()
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
 
 }

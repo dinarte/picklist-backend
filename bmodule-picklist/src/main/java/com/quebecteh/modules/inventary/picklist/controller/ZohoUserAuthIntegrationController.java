@@ -38,7 +38,7 @@ public class ZohoUserAuthIntegrationController {
 	@GetMapping("/{tenantId}/zoho/auth")
 	public PickListUserAuth  auth(ZohoConnection conn) {
 		
-		connectionService.renewConnectionIsExipered(conn);
+		connectionService.renewConnectionIfExipered(conn);
 
 		//UUID id = UUID.randomUUID();
 		

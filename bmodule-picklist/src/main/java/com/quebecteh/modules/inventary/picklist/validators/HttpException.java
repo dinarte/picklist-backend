@@ -4,7 +4,7 @@ public abstract class HttpException extends Exception implements ExceptionDetail
 
 	private static final long serialVersionUID = 1L;
 	
-	protected String detail;
+	protected Object detail;
 	protected String detailId;
 
 	public HttpException(String message) {
@@ -25,7 +25,7 @@ public abstract class HttpException extends Exception implements ExceptionDetail
 	public abstract String getMessageId();
 
 	@Override
-	public String getDetail() {
+	public Object getDetail() {
 		return detail;
 	}
 
