@@ -1,28 +1,28 @@
 plugins {
 	id 'java'
+	id 'eclipse'
 	id 'idea'
 	id 'org.springframework.boot' version '3.1.4'
 	id 'io.spring.dependency-management' version '1.1.6'
 	id 'war'
+	id 'org.hidetake.ssh' version '2.10.1'
 }
 
-group = 'com.quebecteh.data.integrations'
+group = 'com.quebecteh.modules'
 version = '0.0.5-SNAPSHOT'
 
 java {
 	toolchain {
-		// languageVersion = JavaLanguageVersion.of(17)
 		sourceCompatibility = JavaVersion.VERSION_17
     	targetCompatibility = JavaVersion.VERSION_17
 	}
 }
 
-/*
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-}*/
+}
 
 tasks.withType(JavaCompile).configureEach {
     options.annotationProcessorPath = configurations.annotationProcessor
@@ -35,10 +35,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	//implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
-	implementation 'org.springdoc:springdoc-openapi-data-rest:1.7.0'
 	
 	implementation 'com.auth0:java-jwt:4.0.0'
 	
@@ -70,27 +67,28 @@ tasks.named('test') {
 }
 
 
-/*
+
 remotes {
   ContaigeClaud {
-    host = 'ag-br1-17.conteige.cloud' 
-    port = 28626
+    host = 'ag-br1-24.conteige.cloud' 
+    port = 28026
     user = 'application'
-    identity = file("${System.properties['user.home']}/.ssh/guimas_rsa_id") 
+    identity = file("${System.properties['user.home']}/.ssh/id_rsa_pem") 
   }
 }  
+
 
 task deploy {
   doLast {
     ssh.run {
       session(remotes.ContaigeClaud) {
-        put from: "$buildDir/${buildBaseName}-${buildVersion}.war", into: 'appserver/webapps/ROOT.war'
+        put from: "$buildDir/libs/${rootProject.name}-${version}-plain.war", into: "appserver/webapps/${rootProject.name}.war"
+        execute 'tail -f ~/logs/supervisord/supervisord.log.1'
       }
     }
   }
 }
 
-task createWarAndDeploy(dependsOn: ['setAppVersion', 'createWar', 'deploy']) {
+task createWarAndDeploy(dependsOn: ['war', 'deploy']) {
     // empty task body, dependsOn already handles the dependencies
 }
-*/

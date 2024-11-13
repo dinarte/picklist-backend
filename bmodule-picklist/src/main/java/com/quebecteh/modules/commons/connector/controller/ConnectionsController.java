@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quebecteh.modules.commons.clients.api.zoho.connector.ZohoConnectorProperties;
 import com.quebecteh.modules.commons.connector.model.dto.ApiEndPointDTO;
 import com.quebecteh.modules.commons.connector.model.dto.ConnectionsDTO;
+import com.quebecteh.modules.commons.connector.service.ZohoConnectionService;
 import com.quebecteh.modules.inventary.picklist.interceptors.RequiredTenatantId;
 import com.quebecteh.modules.inventary.picklist.model.domain.PickListUserAuth;
 
@@ -26,6 +27,8 @@ public class ConnectionsController {
 	private final PickListUserAuth auth;
 	
 	final ZohoConnectorProperties connectoProperties;
+	
+	final ZohoConnectionService connectionService;
 	
 	
 	@SneakyThrows
@@ -45,6 +48,8 @@ public class ConnectionsController {
 		if (auth == null || auth.getId() == null) {
 			zohoInventaryConnStatus = "Not connected";
 		} else if (!auth.getTenantId().equals(tenantId)) {
+			zohoInventaryConnStatus = "Not connected";
+		} else if (connectionService.countBy("id", auth.getConn().getId()) == 0) {
 			zohoInventaryConnStatus = "Not connected";
 		}
 		

@@ -19,11 +19,11 @@ public class ValidationExceptionBuilder {
 			try {
 				//instance.getClass().getField(fieldName);
 				String getMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-				Method method = instance.getClass().getMethod(getMethodName, null);				
+				Method method = instance.getClass().getMethod(getMethodName);				
 				String objectName = instance.getClass().getSimpleName();
 				objectName = objectName.substring(0, 1).toUpperCase() + objectName.substring(1);
 				String messageId = message.toLowerCase().replace(" ", "-");
-				String value = (String) method.invoke(instance, null);
+				String value = (String) method.invoke(instance);
 				
 				errors.add(
 						ValidationError
