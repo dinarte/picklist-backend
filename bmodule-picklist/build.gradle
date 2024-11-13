@@ -90,5 +90,4 @@ task deploy {
 }
 
 task createWarAndDeploy(dependsOn: ['war', 'deploy']) {
-    // empty task body, dependsOn already handles the dependencies
 }
