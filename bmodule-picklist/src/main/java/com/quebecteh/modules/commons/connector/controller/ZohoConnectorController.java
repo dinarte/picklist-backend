@@ -103,7 +103,15 @@ public class ZohoConnectorController {
             @RequestParam("code") String code) {
    
 		var authValuesMap = zohoConnectorService.sendPostAuthentication(tenantId, code);
-		var userAuth = zohoConnectorService.getUserInfo(authValuesMap.get("access_token").toString());
+		var organizationDtoList = zohoConnectorService.getOrganizations(authValuesMap.get("access_token").toString());
+		
+		var defaultOrganizationId = organizationDtoList.stream()
+										.filter(OrganizationDTO::isInUse)
+										.map(OrganizationDTO::getOrganizationId)
+										.collect(Collectors.toList())
+										.get(0);
+		
+		var userAuth = zohoConnectorService.getUserInfo(authValuesMap.get("access_token").toString(), defaultOrganizationId);
 		var conn = retriveConnection(tenantId, userAuth.getId(), zohoConnectorProperties.getAppName()); 
 		
 		if (conn == null) {
@@ -125,7 +133,7 @@ public class ZohoConnectorController {
 		userAuth.setConn(conn);
 		userAuth.setTenantId(tenantId);
 		
-		var organizationDtoList = zohoConnectorService.getOrganizations(conn.getAccesToken());
+		
 		saveAllOrganizations(tenantId, organizationDtoList, conn);
 	    
 	 
@@ -170,7 +178,6 @@ public class ZohoConnectorController {
      */
     private void saveAllOrganizations(String tenantId, List<OrganizationDTO> organizationDtoList, final ZohoConnection conn) {
         List<ZohoOrganization> organizationsList = organizationDtoList.stream().map(dto -> {
-            dto.setInUse(true);
             return ZohoOrganization
                     .builder()
                     .connection(conn)
@@ -182,10 +189,11 @@ public class ZohoConnectorController {
                     .organizationId(dto.getOrganizationId())
                     .phone(dto.getPhone())
                     .tenantId(tenantId)
+                    .inUse(dto.isInUse())
                     .timeZone(dto.getTimeZone())
                     .build();
         }).collect(Collectors.toList());
-        organizationService.saveOrUpdateAllByOrganizationId(organizationsList);
+        organizationService.saveOrUpdateAllByOrganizationId(organizationsList, tenantId);
     }
 
 

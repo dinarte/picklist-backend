@@ -44,12 +44,17 @@ public class ConnectionsController {
 		};
 	
 		
+		
+		System.out.println("TESTE TESTE TESTE TESTE:");
 		var zohoInventaryConnStatus = "Connected";
 		if (auth == null || auth.getId() == null) {
+			System.out.println("Aqui..................:");
 			zohoInventaryConnStatus = "Not connected";
 		} else if (!auth.getTenantId().equals(tenantId)) {
+			System.out.println("Aqui 2..................:");
 			zohoInventaryConnStatus = "Not connected";
 		} else if (connectionService.countBy("id", auth.getConn().getId()) == 0) {
+			System.out.println("Aqui 3.................:");
 			zohoInventaryConnStatus = "Not connected";
 		}
 		

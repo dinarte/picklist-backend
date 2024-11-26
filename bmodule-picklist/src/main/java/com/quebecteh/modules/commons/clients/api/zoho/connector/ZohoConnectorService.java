@@ -1,5 +1,6 @@
 package com.quebecteh.modules.commons.clients.api.zoho.connector;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -10,7 +11,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -146,9 +149,36 @@ public class ZohoConnectorService {
     }
     
     @SneakyThrows
-    public PickListUserAuth getUserInfo(String accessToken) {
+    public PickListUserAuth getUserInfo(String accessToken, String organizationId) {
     	
-    	 String apiUrl = "https://www.zohoapis.com/inventory/v1/users/me"; 
+    	 JsonNode json = retriveUserInfo(accessToken, organizationId);
+    	 
+    	 System.out.println("TESTE:");
+    	 System.out.println(json);
+    	 System.out.println("-------------------------------");
+    	 
+    	 
+         if (json == null)
+        	 return null;
+         
+
+         JsonNode emailId = json.get("email_ids").get(0);
+         
+         return PickListUserAuth.builder()
+		         	.id(json.get("user_id").asText())
+		         	.userName(json.get("name").asText())
+		         	.userOriginId(json.get("user_id").asText())
+		         	.userEmail(emailId.get("email").asText())
+		         	.build();
+         
+    }
+
+
+
+	private JsonNode retriveUserInfo(String accessToken, String organizationId)
+			throws IOException, InterruptedException, JsonProcessingException, JsonMappingException {
+		String orgIdParam = organizationId != null ? "?organization_id="+organizationId : "";
+		String apiUrl = "https://www.zohoapis.com/inventory/v1/users/me" + orgIdParam; 
     	    
          HttpClient client = HttpClient.newHttpClient();
          HttpRequest get = HttpRequest.newBuilder()
@@ -160,19 +190,13 @@ public class ZohoConnectorService {
 
          HttpResponse<String> response = client.send(get, HttpResponse.BodyHandlers.ofString());
          
-    	
+    	 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+         System.out.println(response.body());
+         
          JsonNode json = JsonMapper.builder().build().readTree(response.body()).get("user");
-         if (json == null)
-        	 return null;
          
-         JsonNode emailId = json.get("email_ids").get(0);
-         
-         return PickListUserAuth.builder()
-		         	.id(json.get("user_id").asText())
-		         	.userName(json.get("name").asText())
-		         	.userOriginId(json.get("user_id").asText())
-		         	.userEmail(emailId.get("email").asText())
-		         	.build();
-         
-    }
+		return json;
+	}
+	
+	
 }

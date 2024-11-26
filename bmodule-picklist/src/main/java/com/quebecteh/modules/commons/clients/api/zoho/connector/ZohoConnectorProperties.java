@@ -37,7 +37,7 @@ public class ZohoConnectorProperties {
 
     public String getAuthUrl(String tenantId, String authCallback)  {
         String url = authBaseUrl + "/auth?client_id=" + clientId + "&response_type=code&scope=" + scope + "&redirect_uri=" 
-                                    + authCallback + "&state=" + tenantId + "&access_type=offline";
+                                    + authCallback + "&state=" + tenantId + "&access_type=offline&prompt=consent";
         
         System.out.println("AUTH URL:");
         System.out.println(url);

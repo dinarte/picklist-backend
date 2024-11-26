@@ -89,5 +89,15 @@ task deploy {
   }
 }
 
+task showLog {
+  doLast {
+    ssh.run {
+      session(remotes.ContaigeClaud) {
+        execute 'tail -f ~/logs/supervisord/supervisord.log.1'
+      }
+    }
+  }
+}
+
 task createWarAndDeploy(dependsOn: ['war', 'deploy']) {
 }
