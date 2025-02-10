@@ -30,8 +30,11 @@ public class ZohoConnectorProperties {
     @Value("${bmodule-picklist.zoho.oauth.scop}")
     private String scope;
 
-    @Value("${bmodule-picklist.zoho.client.api.baseUrl}")
-    private String apiBaseUrl;
+    @Value("${inventory.zoho.client.api.baseUrl}")
+    private String apiBaseUrlInventory;
+    
+    @Value("${books.zoho.client.api.baseUrl}")
+    private String apiBaseUrlBooks;
 
     public String getAuthUrl(String tenantId, String authCallback)  {
         String url = authBaseUrl + "/auth?client_id=" + clientId + "&response_type=code&scope=" + scope + "&redirect_uri=" 
@@ -52,8 +55,12 @@ public class ZohoConnectorProperties {
     	return url;
     }
     
-    public String getApiUrl() {
-        return apiBaseUrl;
+    public String getApiUrlInventory() {
+        return apiBaseUrlInventory;
+    }
+    
+    public String getApiUrlBooks() {
+        return apiBaseUrlBooks;
     }
     
     public String getConnectionUrl(String tenentId) {

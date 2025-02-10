@@ -39,7 +39,7 @@ public class ZohoApiClientSalesOrderService {
 
 	    public ZohoResponse fetchAllSalesOrder(String organizationId, String authKey) {
 	        
-	        String url = connProperties.getApiBaseUrl().concat(END_POINT_GET_ALL_SALES_ORDER).concat("?organization_id=" + organizationId);
+	        String url = connProperties.getApiBaseUrlInventory().concat(END_POINT_GET_ALL_SALES_ORDER).concat("?organization_id=" + organizationId);
 	        
 	        HttpClient client = HttpClient.newHttpClient();
 	        
@@ -56,7 +56,7 @@ public class ZohoApiClientSalesOrderService {
 	   
 	    public ZohoResponse fetchSalesOrderById(String organizationId, String salesOrderId, String authKey) {
 	    	
-	        String url = String.format( connProperties.getApiBaseUrl().concat(END_POINT_GET_SALES_ORDER), salesOrderId)
+	        String url = String.format( connProperties.getApiBaseUrlInventory().concat(END_POINT_GET_SALES_ORDER), salesOrderId)
 	        				.concat("?organization_id=" + organizationId);
 	        
 	        HttpClient client = HttpClient.newHttpClient();
@@ -75,7 +75,7 @@ public class ZohoApiClientSalesOrderService {
 	    public ZohoResponse setStatus(String organizationId, String salesOrderId, String authKey, String status) {
 	    		
 	    	String url = String
-			    			.format( connProperties.getApiBaseUrl().concat(END_POINT_GET_SALES_ORDER), salesOrderId)
+			    			.format( connProperties.getApiBaseUrlInventory().concat(END_POINT_GET_SALES_ORDER), salesOrderId)
 			    			.concat("/status/").concat(status)
 		    				.concat("?organization_id=" + organizationId);
 	    	
@@ -103,7 +103,7 @@ public class ZohoApiClientSalesOrderService {
 	    public ZohoResponse setSubStatus(String organizationId, String salesOrderId, String authKey, String substatus) {
     		
 	    	String url = String
-			    			.format( connProperties.getApiBaseUrl().concat(END_POINT_GET_SALES_ORDER), salesOrderId)
+			    			.format( connProperties.getApiBaseUrlInventory().concat(END_POINT_GET_SALES_ORDER), salesOrderId)
 			    			.concat("/substatus/").concat(substatus)
 		    				.concat("?organization_id=" + organizationId);
 	    	

@@ -57,6 +57,8 @@ dependencies {
     /* *** COMUMONS *** */
     implementation 'org.reflections:reflections:0.10.2'
 	implementation 'org.aspectj:aspectjrt:1.9.19'
+	
+	implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
 }
 
 dependencyManagement {

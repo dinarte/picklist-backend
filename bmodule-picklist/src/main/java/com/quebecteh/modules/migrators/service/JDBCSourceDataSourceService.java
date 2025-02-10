@@ -1,4 +1,4 @@
-package com.quebecteh.modules.migrators.seervice;
+package com.quebecteh.modules.migrators.service;
 
 import javax.sql.DataSource;
 

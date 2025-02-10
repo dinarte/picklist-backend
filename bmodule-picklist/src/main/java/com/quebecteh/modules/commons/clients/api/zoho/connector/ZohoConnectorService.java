@@ -77,7 +77,7 @@ public class ZohoConnectorService {
     @SneakyThrows
     public List<OrganizationDTO> getOrganizations(String accessToken) {
         
-        String apiUrl = connProperties.getApiUrl() + "/organizations"; 
+        String apiUrl = connProperties.getApiUrlInventory() + "/organizations"; 
     
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest get = HttpRequest.newBuilder()

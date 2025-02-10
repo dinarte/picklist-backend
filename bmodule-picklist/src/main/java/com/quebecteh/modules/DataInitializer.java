@@ -23,8 +23,8 @@ public class DataInitializer {
 	@Bean
 	public CommandLineRunner loadData() {
 		return args -> {
-			createSysAdminUser();
-			createBaveTenat();
+			//createSysAdminUser();
+			//createBaveTenat();
 		};
 	}
 	

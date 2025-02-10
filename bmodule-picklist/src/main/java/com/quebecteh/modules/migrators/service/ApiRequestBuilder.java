@@ -1,4 +1,4 @@
-package com.quebecteh.modules.migrators.seervice;
+package com.quebecteh.modules.migrators.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
