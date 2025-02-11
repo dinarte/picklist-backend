@@ -33,6 +33,7 @@ public class OrganizationDTO {
     
     private String phone;
     
+    @JsonProperty("is_default_org")
     private boolean inUse;
     
     private ApiEndPointDTO[] endPoints;

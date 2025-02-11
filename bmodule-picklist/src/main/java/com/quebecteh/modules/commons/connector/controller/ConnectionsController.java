@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quebecteh.modules.commons.clients.api.zoho.connector.ZohoConnectorProperties;
 import com.quebecteh.modules.commons.connector.model.dto.ApiEndPointDTO;
 import com.quebecteh.modules.commons.connector.model.dto.ConnectionsDTO;
+import com.quebecteh.modules.commons.connector.service.ZohoConnectionService;
 import com.quebecteh.modules.inventary.picklist.interceptors.RequiredTenatantId;
 import com.quebecteh.modules.inventary.picklist.model.domain.PickListUserAuth;
 
@@ -27,6 +28,8 @@ public class ConnectionsController {
 	
 	final ZohoConnectorProperties connectoProperties;
 	
+	final ZohoConnectionService connectionService;
+	
 	
 	@SneakyThrows
 	@GetMapping("/{tenantId}/connections")
@@ -39,16 +42,21 @@ public class ConnectionsController {
 		ApiEndPointDTO[] zohoEndPoins = {
 				new ApiEndPointDTO("Connect to Zoho Inventary", "connect-zoho-inventary", "/zoho/" +tenantId + "/auth", "GET")
 		};
+	
 		
+		
+		System.out.println("TESTE TESTE TESTE TESTE:");
 		var zohoInventaryConnStatus = "Connected";
 		if (auth == null || auth.getId() == null) {
+			System.out.println("Aqui..................:");
+			zohoInventaryConnStatus = "Not connected";
+		} else if (!auth.getTenantId().equals(tenantId)) {
+			System.out.println("Aqui 2..................:");
+			zohoInventaryConnStatus = "Not connected";
+		} else if (connectionService.countBy("id", auth.getConn().getId()) == 0) {
+			System.out.println("Aqui 3.................:");
 			zohoInventaryConnStatus = "Not connected";
 		}
-		
-		if (!auth.getTenantId().equals(tenantId)) {
-			zohoInventaryConnStatus = "Not connected";
-		}
-		
 		
 		ConnectionsDTO zohoConn = new ConnectionsDTO("Zoho Inventary", connectoProperties.getScope(), zohoInventaryConnStatus, true, zohoEndPoins);
 		

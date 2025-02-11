@@ -41,5 +41,7 @@ public class ZohoOrganization {
     
     private String phone;
     
+    private Boolean inUse;
+    
     private String tenantId;
 }

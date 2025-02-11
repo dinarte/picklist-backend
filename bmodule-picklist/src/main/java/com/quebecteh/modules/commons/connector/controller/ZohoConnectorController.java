@@ -3,6 +3,7 @@ package com.quebecteh.modules.commons.connector.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ import com.quebecteh.modules.inventary.picklist.controller.JwtHelper;
 import com.quebecteh.modules.inventary.picklist.model.domain.PickListUser;
 import com.quebecteh.modules.inventary.picklist.model.domain.PickListUserAuth;
 import com.quebecteh.modules.inventary.picklist.service.PickListUserService;
+import com.quebecteh.modules.inventary.picklist.validators.HttpBadRequestException;
+import com.quebecteh.modules.inventary.picklist.validators.HttpResouceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -67,7 +70,6 @@ public class ZohoConnectorController {
     @Value("${bmodule-picklist.zoho.postAuth.frontend}")
     private String frontEndUrl; 
     
-    
 
     /**
      * Handles the authentication request for a given tenant ID.
@@ -79,18 +81,9 @@ public class ZohoConnectorController {
      */
     @GetMapping("/{tenantId}/auth")
     public ApiResponse<String> auth(@PathVariable("tenantId") String tenantId) {
-    	//boolean isConnectionExists = connectionService.countByTenantId(tenantId) > 0;
-
-       /* if (isConnectionExists) {
-            String url =  zohoConnectorProperties.getBaseAppContextUrl() + "/zoho/auth/callback?code=&state=" + tenantId;
-            return new ApiResponse<String>(200, "zoho-auth-url", "Zoho Auth Url", url);
-        } */
-
         String callbackUrl = zohoConnectorProperties.getCallbackUrl();
         String url = zohoConnectorProperties.getAuthUrl(tenantId, callbackUrl);
-  
         return new ApiResponse<String>(200, "zoho-auth-url", "Zoho Auth Url", url);
-        
     }
 
     /**
@@ -102,44 +95,78 @@ public class ZohoConnectorController {
      * @param code The authorization code provided by Zoho after user consent.
      * @return ResponseEntity A list of OrganizationDTO representing the organizations linked to the tenant.
      */
+   
     @SneakyThrows
     @GetMapping("/auth/callback")
     public RedirectView authCallback(
             @RequestParam("state") String tenantId,
             @RequestParam("code") String code) {
+   
+		var authValuesMap = zohoConnectorService.sendPostAuthentication(tenantId, code);
+		var organizationDtoList = zohoConnectorService.getOrganizations(authValuesMap.get("access_token").toString());
+		
+		var defaultOrganizationId = organizationDtoList.stream()
+										.filter(OrganizationDTO::isInUse)
+										.map(OrganizationDTO::getOrganizationId)
+										.collect(Collectors.toList())
+										.get(0);
+		
+		var userAuth = zohoConnectorService.getUserInfo(authValuesMap.get("access_token").toString(), defaultOrganizationId);
+		var conn = retriveConnection(tenantId, userAuth.getId(), zohoConnectorProperties.getAppName()); 
+		
+		if (conn == null) {
+		    conn = createNewConnection(tenantId, authValuesMap, userAuth);
+		    var user = PickListUser
+				    .builder()
+			        	.email(userAuth.getUserEmail())
+			        	.name(userAuth.getUserName())
+			        	.roles("PickListUser")
+			        	.password("none")
+			        	.tenantId(tenantId)
+			        .build();
+		    userService.saveOrUpdate(user);
+		}   
+		
+		connectionService.renewConnectionIfExipered(conn, authValuesMap);
 
-
+			
+		userAuth.setConn(conn);
+		userAuth.setTenantId(tenantId);
+		
+		
+		saveAllOrganizations(tenantId, organizationDtoList, conn);
+	    
+	 
+	    var frontEndConnectionsView = frontEndUrl + "?tenantId="+tenantId+"&auth="	+ jwtHelper.getEncodedJwt(userAuth);
+		return new RedirectView(frontEndConnectionsView);
+        
+    }
+    
+    @SneakyThrows
+    @GetMapping("/auth/revoke/{connectionId}")
+    public ApiResponse<Map<String, Object>> revoke(@PathVariable("connectionId") Long connectionId) {
+   
+    	var conn = connectionService.findById(connectionId)
+    					.orElseThrow(() -> 
+    						new HttpResouceNotFoundException("Connection ID #"+connectionId+" not found.","connectionId-not-found")
+    					);
     	
-        var authValuesMap = zohoConnectorService.sendPostAuthentication(tenantId, code);
-        var userAuth = zohoConnectorService.getUserInfo(authValuesMap.get("access_token").toString());
-        var conn = retriveConnection(tenantId, userAuth.getId(), zohoConnectorProperties.getAppName());
-
-        if (conn == null) {
-	        conn = createNewConnection(tenantId, authValuesMap, userAuth);
-	        
-	       var user = PickListUser
-		    		    .builder()
-				        	.email(userAuth.getUserEmail())
-				        	.name(userAuth.getUserName())
-				        	.roles("PickListUser")
-				        	.password("none")
-				        	.tenantId(tenantId)
-				        .build();
-		        	
-	        userService.saveOrUpdate(user);
-	        connectionService.saveOrUpdate(conn);      
-        } else {
-        	connectionService.renewConnectionIsExipered(conn); 
-        }
-
-        userAuth.setConn(conn);
-        userAuth.setTenantId(tenantId);
+    	var refreshToken = Optional.of(conn.getRefreshToken()).orElseThrow();
+    	
+		var zohoResponse = zohoConnectorService.sendPostRevokeRefreshToken(refreshToken);
+		var response = new ApiResponse<Map<String, Object>>(200, 
+								"connetion-revoked", 
+								"Connection ID #"+connectionId+" revoked", 
+								zohoResponse
+							);
+		
+		if (response.getBody().get("error") != null)
+			throw new HttpBadRequestException(zohoResponse, "zoho-revoke-invalid");
+	
+		conn.setRefreshToken(null);
+		connectionService.saveOrUpdate(conn);
+		return response;
         
-        var organizationDtoList = zohoConnectorService.getOrganizations(conn.getAccesToken());
-        saveAllOrganizations(tenantId, organizationDtoList, conn);
-        
-        var frontEndConnectionsView = frontEndUrl + "?tenantId="+tenantId+"&auth="+ jwtHelper.getEncodedJwt(userAuth);
-        return new RedirectView(frontEndConnectionsView);
     }
 
     /**
@@ -151,7 +178,6 @@ public class ZohoConnectorController {
      */
     private void saveAllOrganizations(String tenantId, List<OrganizationDTO> organizationDtoList, final ZohoConnection conn) {
         List<ZohoOrganization> organizationsList = organizationDtoList.stream().map(dto -> {
-            dto.setInUse(true);
             return ZohoOrganization
                     .builder()
                     .connection(conn)
@@ -163,10 +189,11 @@ public class ZohoConnectorController {
                     .organizationId(dto.getOrganizationId())
                     .phone(dto.getPhone())
                     .tenantId(tenantId)
+                    .inUse(dto.isInUse())
                     .timeZone(dto.getTimeZone())
                     .build();
         }).collect(Collectors.toList());
-        organizationService.saveOrUpdateAllByOrganizationId(organizationsList);
+        organizationService.saveOrUpdateAllByOrganizationId(organizationsList, tenantId);
     }
 
 
@@ -214,6 +241,7 @@ public class ZohoConnectorController {
                 .createdIn(LocalDateTime.now())
                 .expireIn(LocalDateTime.now().plusSeconds(duration.longValue()))
                 .build();
+        connectionService.saveOrUpdate(conn);
         return conn;
     }
 }

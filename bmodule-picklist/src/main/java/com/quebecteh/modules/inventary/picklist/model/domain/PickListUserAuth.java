@@ -1,6 +1,7 @@
 package com.quebecteh.modules.inventary.picklist.model.domain;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 import com.quebecteh.modules.commons.connector.model.domain.ZohoConnection;
 
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Component
+@RequestScope
 @Data
 @Builder
 @NoArgsConstructor

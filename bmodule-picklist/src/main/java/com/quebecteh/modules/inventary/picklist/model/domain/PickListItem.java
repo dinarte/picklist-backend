@@ -51,7 +51,8 @@ public class PickListItem {
 	
 	private Integer quantityDisponible;
 	
-	private Integer quantityPicked;
+	@Builder.Default
+	private Integer quantityPicked = 0;
 	
 	@Builder.Default
 	@Pattern(regexp = PickListConstants.PICKLIST_ITEMS_AVAILABLE_STATUS)

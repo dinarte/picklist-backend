@@ -17,7 +17,7 @@ public class ZohoInventarySalesOrderService {
 	
 	public ZohoResponse setSalesOrderAsReadyToShipping(String organizationId, String salesOrdersId) {
 		var conn = auth.getConn();
-		zohoConnectionService.renewConnectionIsExipered(conn);
+		zohoConnectionService.renewConnectionIfExipered(conn);
 		return salesOrderService.setSubStatus(organizationId, salesOrdersId, conn.getAccesToken(), "cs_readyto");
 	}
 	

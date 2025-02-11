@@ -1,9 +1,9 @@
 package com.quebecteh.modules.inventary.picklist.validators;
 
-public record ExceptionDetailRecord(String detail, String detailId) implements ExceptionDetail{
+public record ExceptionDetailRecord(Object detail, String detailId) implements ExceptionDetail{
 
 	@Override
-	public String getDetail() {
+	public Object getDetail() {
 		return detail;
 	}
 

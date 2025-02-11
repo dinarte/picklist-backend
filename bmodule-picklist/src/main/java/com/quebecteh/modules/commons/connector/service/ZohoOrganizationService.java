@@ -5,6 +5,6 @@ import com.quebecteh.modules.commons.connector.model.domain.ZohoOrganization;
 
 public interface ZohoOrganizationService extends MultiTenancyService<ZohoOrganization, Long> {
 
-	public Iterable<ZohoOrganization> saveOrUpdateAllByOrganizationId(Iterable<ZohoOrganization> organizations);
+	public Iterable<ZohoOrganization> saveOrUpdateAllByOrganizationId(Iterable<ZohoOrganization> organizations, String tenantId);
 
 }

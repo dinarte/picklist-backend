@@ -4,6 +4,6 @@ public interface ExceptionDetail {
 
 	String getDetailId();
 
-	String getDetail();
+	Object getDetail();
 
 }
